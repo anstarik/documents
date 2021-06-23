@@ -1,0 +1,700 @@
+Gf#proxy
+
+printf -v no_proxy '%s,' 10.79.237.{1..255};
+export no_proxy="${no_proxy%,}";
+
+#configure and make
+
+apt-get install build-essential libpcre3 libpcre3-dev zlib1g-dev checkinstall libxslt-dev libgd-dev
+checkinstall -install=no --pkgname=nginx --pkgversion=1.19.10 --nodoc
+
+dnf install install pcre-devel openssl-devel libxslt-devel libxml2-devel gd-devel
+dnf groupinstall "Development Tools"
+https://filebox.ece.vt.edu/~mclint/puppet/files/checkinstall-1.6.2-3.el6.1.x86_64.rpm
+
+#SSH
+ssh-keygen
+ssh-copy-id username@remote_host
+~/.ssh/authorized_keys
+
+/etc/ssh/sshd_config
+AllowUsers user1
+
+#Different
+/etc/netplan/*.yaml
+/etc/apt/apt.conf.d/90curtin-aptproxy
+gsettings  list-recursively  org.gnome.system.proxy
+netplan apply # restart network
+
+sudo ip route change default via 192.168.1.1 dev eth0
+
+lsb_release -a # sysinfo
+cat /etc/*release*
+lshw # hardware info
+
+#Environment
+vi  ~/.bash_profile
+source ~/.bash_profile
+/etc/profile
+/etc/profile.d/sh.local
+/etc/environment
+~/.bashrc # for non interactive
+
+
+#docker
+
+ docker stats --no-stream  # resource usage
+
+
+/etc/default/docker
+sudo vi /etc/systemd/system/docker.service.d/proxy.conf
+
+[Service]
+Environment="HTTP_PROXY=http://myproxy.hostname:8080/"
+Environment="HTTPS_PROXY=http://myproxy.hostname:8080/"
+Environment="NO_PROXY="localhost,127.0.0.1,::1"
+
+#container use proxy
+#create
+
+ ~/.docker/config.json
+
+{
+ "proxies":
+ {
+   "default":
+   {
+     "httpProxy": "http://172.21.1.5:3128",
+     "httpsProxy": "http://172.21.1.5:3128"
+   }
+ }
+}
+
+
+docker search ubuntu
+docker inspect <image>
+docker network ls
+
+
+docker rm $(docker ps -a -q)
+
+docker  volume create named_v6-slaves
+docker run --name named_v6 -it -p 172.21.1.175:53:53/udp  -v /docker/test1/named/named.conf:/etc/named.conf -v named_v6-slaves:/var/named/slaves/ anstarik/named:v6
+docker run --name named_v1 -it -p 172.21.1.175:53:53/udp  -v /docker/test1/named/named.conf:/etc/named.conf centos:named /bin/bash
+docker run --name zabbix_v1 --net pub_net --ip=172.21.1.8 -e DB_SERVER_HOST="172.21.1.175" -e POSTGRES_USER="zabbix" -e POSTGRES_PASSWORD="zabbix" -d zabbix/zabbix-server-pgsql:ubuntu-latest
+docker run --name nginx_v1 --net pub_net --ip=172.21.1.9 -e DB_SERVER_HOST="172.21.1.12" -e POSTGRES_USER="zabbix" -e POSTGRES_PASSWORD="zabbix" -e ZBX_SERVER_HOST="172.21.1.8" -e PHP_TZ="Europe/Moscow" -d zabbix/zabbix-web-nginx-pgsql:ubuntu-latest
+
+docker run --name postgres_v12.5 -it -p 172.21.1.175:5432:5432 -v postgres-data:/postgres anstarik/postgres:v2
+docker run -d --name zpostgres_12_5 --net pub_net --ip=172.21.1.12 -e POSTGRES_PASSWORD=P@ssw0rd -e PGDATA=/var/lib/postgresql/data/pgdata -v postgres-data:/var/lib/postgresql/data  postgres:12.5
+
+
+
+
+docker run -t -i centos:latest /bin/bash  # inside docker image
+docker run --entrypoint /bin/bash  -t -i anstarik/postgres:v2 # override entrypoint
+
+docker build -t anstarik/postgres:v1 .
+docker commit -m "Add user dmosk" -a "Dmitry Mosk" 8f07ef93918f centos:my
+docker commit -m "Nextcloud beta" -a "Anstarik" 8f07ef93918f anstarik/nextcloud:v1
+docker start
+docker attach
+
+docker exec -it named_v2 /bin/bash
+docker exec -u 0 -it 1bb9d26234b6 /bin/bash # run as root
+
+docker cp [OPTIONS] CONTAINER:SRC_PATH DEST_PATH
+
+docker network create -d macvlan \
+    --subnet=172.21.1.0/24 \
+    --gateway=172.21.1.5 \
+    -o parent=eth0 \
+    pub_net
+
+
+#groups and users
+
+/etc/group
+/etc/passwd
+/etc/shadow
+
+/etc/sudoers
+user1 ALL=(ALL) NOPASSWD:/usr/bin/cat /proc/*
+
+useradd -p $2 -s /bin/bash test1
+passwd --expire user1 # force password change
+chage -l user1 # expiration dates
+chage -e 2021-05-20 user1
+
+groupadd admin
+
+userdel -r test1
+getent group developers # list group members
+id user1 # all groups of user
+usermod -a -G group user # add user to group
+gpasswd -d user group #remove user from group
+
+usermod -md /home/user test # user directory change
+
+passwd user # change password
+
+#packet managers
+
+yum whatprovides "*/libcrypto.so.10"
+
+yum install hyperv-daemons
+yum list installed | grep hyperv
+apt   list -a openssl
+rpm -e openssl-1.0.2k-8.el7.x86_64 --nodeps
+rpm -ivh 
+rpm -q -l postgres # list installed files by package
+rpm -qi postgres # query info
+rpm -qc postgres # query CONFIG files of package
+tar -zxvf nginx-1.19.6.tar.gz
+apt list --installed
+tar xvzf lis-rpms-4.3.5.tar.gz
+
+/etc/apt/sources.list # repository file in ubuntu
+
+/etc/yum.conf.
+proxy=http://proxyhost:8080
+
+/etc/apt/apt.conf.d
+echo 'Acquire::http::proxy "http://172.21.1.5:3128/";'>>/etc/apt/apt.conf.d/10proxy
+echo 'Acquire::https::proxy "http://172.21.1.5:3128/";'>>/etc/apt/apt.conf.d/10proxy
+
+
+update-alternatives --list php
+
+
+
+
+
+#systemd
+systemctl mask dev-disk-by\x2duuid-fbc97e9b\x2d26ec\x2d4952\x2d8e0c\x2dea6ac3964ca2.device
+systemctl -a | grep "remote"
+systemctl daemon-reload
+systemctl status swap.target
+systemctl list-unit-files
+cat /etc/services
+
+
+#boot journal
+journalctl -xb
+cat /var/log/boot.log
+
+
+# disk cmd
+blkid  #list uuid of partitions
+lsblk -fs
+
+df -h
+du -h
+du --max-depth=1 -h / | sort -nr
+
+resize2fs /dev/sda2
+
+ls -l /sys/class/scsi_host/host*/proc_name
+echo "- - -" > /sys/class/scsi_host/hostX/scan
+lsblk
+
+ls /sys/class/scsi_device/
+
+echo 1 > /sys/class/scsi_device/1\:0\:0\:0/device/rescan
+
+mkfs.ext4 /dev/sdb1
+
+#kernel
+Edit /etc/default/grub and append your kernel options and
+
+grub-mkconfig -o /boot/grub/grub.cfg
+or
+grub2-mkconfig -o /boot/efi/EFI/centos/grub.cfg
+
+grep saved /boot/grub2/grubenv
+
+#search
+find / -iname "remote-fs-pre.target"
+locate 
+lsof
+grep -Ril "text-to-find-here" /  # files with text inside em
+
+#postgres
+chown -Rf postgres:postgres /postgres/db
+chmod -R 700 /postgres/db
+ su - postgres
+ initdb -D /postgres/db/data
+service postgresql initdb -D /postgres/db
+sudo -u postgres psql
+SHOW data_directory;
+
+/usr/pgsql-12/bin/pg_upgrade --old-bindir=/usr/bin/ --new-bindir=/usr/pgsql-12/bin/ --old-datadir=/postgres/db --new-datadir=/postgres/db12 --check
+
+sudo yum -y install https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+
+psql -U username -h localhost -p 5432 dbname
+psql -U engine -h localhost -p 5432 engine
+ /etc/profile.d/sh.local
+export PGDATA="/postgres/db12"
+export PATH="$PATH:/usr/pgsql-12/bin"
+
+
+systemctl -a | grep "postgres" --> postgresql.service
+vi /etc/systemd/system/multi-user.target.wants/postgresql.service
+Environment=PGDATA=
+
+pg_dump -U $dbUser $database | gzip > filename.sql.gz
+pg_dump DBNAME > filename.sql
+zcat /var/lib/postgresql/data/pgdata/backup/zabbix_2021_02_01.bak | psql zabbix
+
+#name
+hostnamectl set-hostname pingvinus
+
+#ethernet&firewall
+ip a
+ifdown enp0s3
+ifup enp0s3
+nmcli d
+ip link delete br0 type bridge
+/etc/sysctl.conf
+net.ipv4.ip_forward=1
+cat /proc/sys/net/ipv4/ip_forward
+netstat -tulnp
+
+
+nmcli connection show docker0
+
+#firewall
+
+firewall-cmd --permanent --zone=public --add-service=http
+firewall-cmd --permanent --add-port=5900-5905/tcp
+firewall-cmd --reload
+firewall-cmd --list-all
+firewall-cmd --zone=public --add-masquerade --permanent
+firewall-cmd --get-active-zones
+firewall-cmd --direct --get-all-rules
+
+ip -d link show
+
+tcpdump -D
+tcpdump -i eth0 not ip dst 172.21.1.2 and not ip src 172.21.1.2
+
+iptables -t nat -L
+
+#text editors
+vi
+vi -o /path/to/file1 /path/to/file2
+ctrl+w,up\down between files
+v - start select
+yy - copy selection
+p - paste selection
+123>/dev/clipboard
+vi /<word> # search word  - next press n
+:%s/foo/bar/gc
+Change each 'foo' to 'bar', but ask for confirmation first.
+
+sed  "s/UUID.*/UUID=$a/" /home/user1/ifcfg-eth0
+sed "s/.*PGDATA/# \0/"  $(eval echo ~postgres)/.bash_profile # make comment
+
+#ovirt
+https://ms-ovirt001.home.local:443/ovirt-engine
+export http_proxy=http://172.21.1.5:3128/
+export https_proxy=http://172.21.1.5:3128/
+kvm
+systemctl start libvirtd
+virsh list --all
+virsh net-list
+virsh vncdisplay FirstTest
+
+virsh console your_vm_name_here
+
+saslpasswd2 -a libvirt root
+/etc/libvirt/libvirtd.conf
+auth_tcp = "sasl"
+listen addr
+
+/etc/libvirt/qemu
+vnc_listen = "0.0.0.0"
+
+virt-manager -c qemu+ssh://user@host/system?socket=/var/run/libvirt/libvirt-sock
+
+default images dir
+ /var/lib/libvirt/images/
+
+
+
+ engine-config -s AdminPassword=interactive
+ systemctl restart ovirt-engine
+yum install http://resources.ovirt.org/pub/yum-repo/ovirt-release43.rpm
+/var/log/ovirt-engine
+
+ovirt host prepare
+yum -y install epel-release
+yum install http://resources.ovirt.org/pub/yum-repo/ovirt-release43.rpm
+
+nested virtualization
+cat /sys/module/kvm_intel/parameters/nested
+
+
+modprobe -r kvm_intel
+modprobe kvm_intel nested=1
+
+$cat /sys/module/kvm_intel/parameters/nested => Y
+Persist the change
+echo “options kvm-intel nested=1?>/etc/modprobe.d/kvm.conf
+
+yum install http://resources.ovirt.org/pub/yum-repo/ovirt-release-master.rpm
+vdsm-hook-macspoof
+vdsm-hook-nestedvt
+Invoke-WebRequest https://raw.githubusercontent.com/Microsoft/Virtualization-Documentation/master/hyperv-tools/Nested/Enable-NestedVm.ps1 -OutFile ~/Enable-NestedVm.ps1
+
+~/Enable-NestedVm.ps1 -VmName <VmName>
+Set-VMProcessor -VMName <VMName> -ExposeVirtualizationExtensions $true
+
+
+
+
+
+#squid
+/var/log/squid/access.log
+grep 192.168.2.78 /var/log/squid/access.log  | awk '{print strftime("%c", $1)  " ; " $3 " " $4 " " $6 " " $8 " " $7}'
+
+squid -k reconfigure
+
+
+curl www.yandex.ru -s -f -o /dev/null || echo "Website down."
+
+
+#haproxy
+/usr/sbin/setsebool -P haproxy_connect_any 1
+
+
+#samba
+------
+
+usermod -a -G r_share_users user1
+gpasswd -d user1 r_share_users
+pdbedit -w -L
+testparm /etc/samba/smb.conf
+smbstatus
+smbcontrol smbd kill-client-ip 172.21.1.2
+smbcontrol all reload-config
+
+
+#bind
+named-checkconf /etc/named.conf
+
+rndc sync -clean
+rndc querylog # enable log of all queries to named.run log
+
+#reload
+rndc freeze example.com
+rndc reload example.com
+rndc thaw example.com
+
+ExecStart=/usr/sbin/named -u named -c ${NAMEDCONF} $OPTIONS
+ExecReload=/bin/sh -c 'if /usr/sbin/rndc null > /dev/null 2>&1; then /usr/sbin/rndc reload; else /bin/kill -HUP $MAINPID; fi'
+ExecStop=/bin/sh -c '/usr/sbin/rndc stop > /dev/null 2>&1 || /bin/kill -TERM $MAINPID'
+/usr/sbin/named -u named -c /etc/named.conf $OPTIONS
+dig @172.21.1.5 home.local axfr
+
+#audit access
+auditctl -w /var/named/master/ -p war -k named_audit
+vi /etc/audit.rules
+ - ausearch -f /var/named/master/ -i | less
++ ausearch -i -k named_audit
+auditctl -l  # list rules
+
+
+#zabbix
+u:Admin
+p:zabbix
+
+zabbix_server --version
+/etc/zabbix/zabbix_agentd.conf
+/etc/zabbix/zabbix_server.conf;
+ zabbix_get -s 172.21.1.175 -p 10050 -k system.hostname
+
+
+#nginx
+#config files
+/etc/nginx/nginx.conf # find section ->include  =  /etc/nginx/conf.d/
+nginx -V # check version
+nginx -t # check config syntax
+nginx -s reload # reload config
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/nginx-selfsigned.key -out /etc/ssl/certs/nginx-selfsigned.crt
+
+
+#GIT
+
+git init # initialize folder
+git clone -b main https://github.com/anstarik/deploys.git . # clone main branch to current directory not initialize!
+
+git clone -b master https://github.com/bibinwilson/kubernetes-prometheus.git .
+
+git config --list # show settings
+
+git status 
+git add .
+git commit -m "message"
+git branch
+git checkout -b "new_branch" # create and connect to new branch
+git branch -D [name] # delete branch
+git push -u origin  [branch name]
+git log -p
+git diff 'origin/main' # compare changes from origin
+git diff --staged # diffs after add
+git remote -v # list remote repos
+
+
+git merge -s [branch]
+
+#LXD\LXC\JUJU
+
+snap list
+snap changes
+sudo snap remove <package>
+sudo snap refresh <package>
+
+snap info juju
+snap set system proxy.http="http://192.168.8.140:3128/"
+snap install juju --classic --channel=2.8/stable
+snap install conjure-up --classic
+
+sudo lxc config set core.proxy_http http://username:password@<IP>:<port>/
+
+lxc launch ubuntu:16.04 u1
+
+lxc list -c n --format csv
+for i in $(lxc list -c n --format csv); do lxc profile add $i default;echo $i; done
+
+--- for vm
+lxc launch [name] --vm
+lxc console [name] --type=vga
+lxc config set vm01 security.secureboot=false
+
+lxc profile list
+lxc profile show [profile name]
+lxc profile edit default 
+lxc profile set [profile name] limits.memory 1GB # to profile config
+
+lxc profile set default environment.http_proxy http://192.168.8.140:3128/
+
+sudo lxc config set core.proxy_http http://username:password@<IP>:<port>/
+lxc config set core.proxy_http http://192.168.8.140:3128/
+lxc config show 
+lxc config show [container name] --expanded
+
+lxc file push /file.txt [container name]/tmp/file.txt
+lxc file pull
+lxc storage edit [pool name]
+lxc storage create LXD_STORAGE2 dir  source=/lxcstorage/lxcstorage2
+
+lxc storage volume craete [pool name] [volume name]
+lxc storage volume attach [pool name] [volume name] [container name] data /tmp #mount point
+
+lxc profile copy default mycustom 
+
+lxc network set lxdbr0 ipv4.address 10.0.8.1/24
+lxc network set lxdbr0 ipv4.dhcp.ranges 10.0.8.2-10.0.8.200
+lxc network set lxdbr0 bridge.mtu 9000
+lxc network unset lxdbr0 ipv6.address
+lxc network unset lxdbr0 ipv6.nat
+
+#---Net port NAT
+lxc config device add [container name] eth1 proxy listen=tcp:0.0.0.0:80#onhost connect=tcp:127.0.0.1:80#oncontainer 
+
+juju model-config
+
+
+juju dashboard
+juju show-controller
+juju status
+
+PROXY_NO=$(echo localhost 127.0.0.1 10.50.241.{1..255} 10.79.237.{1..255} | sed 's/ /,/g')
+export no_proxy=$PROXY_NO
+
+juju bootstrap \
+--model-default http-proxy=$PROXY_HTTP \
+--model-default https-proxy=$PROXY_HTTPS \
+--model-default no-proxy=$PROXY_NO \
+localhost lxd
+
+juju bootstrap localhost --config=jujuconfig.yaml --debug
+juju model-defaults no-proxy=$no_proxy
+juju model-config no-proxy=$no_proxy
+
+juju destroy-model <model-name> --release-storage
+juju destroy-controller -y --destroy-all-models --release-storage
+juju unregister conjure-up-localhost-011 # delete bad controller
+----------
+config.yaml
+-----------
+default-series: bionic
+#no-proxy: 10.229.0.1
+apt-http-proxy: http://192.168.8.140:3128/
+apt-https-proxy: http://192.168.8.140:3128/
+https-proxy: http://192.168.8.140:3128/
+http-proxy: http://192.168.8.140:3128/
+juju-http-proxy: http://192.168.8.140:3128/
+juju-https-proxy: http://192.168.8.140:3128/
+no-proxy: localhost,10.79.237.1
+
+
+juju scale-application mediawiki 2
+juju add-unit --num-units 2 postgresql
+juju remove-unit [name]
+
+juju actions mysql-innodb-cluster
+juju run-action mysql-innodb-cluster/1 restart-services
+juju show-action-output ID
+
+juju debug-log --replay --no-tail --include=ceph-osd/0
+
+#REDIS
+
+redis-cli -h <IP> ping
+redis-cli -a <pass> -h <IP> ping
+redis-cli -a <pass> -h <IP> monitor
+redis-cli --stat
+
+redis-cli INFO replication
+redis-cli -p 26379 SENTINEL get-master-addr-by-name mymaster
+redis-cli -p 26379 info sentinel
+
+SENTINEL RESET *
+SLAVEOF NO ONE
+
+#ZOOKEEPER
+zkCli.sh -server 127.0.0.1:2181
+
+
+#CA
+
+#add new trusted root cert
+Copy certificate.crt issued by hosting to:
+
+/etc/pki/ca-trust/source/anchors/
+Then:
+update-ca-trust force-enable (ignore not found warnings)
+update-ca-trust extract
+
+#HELM
+
+helm version
+
+helm repo add stable https://charts.helm.sh/stable
+helm repo update
+helm repo list
+
+helm search repo stable
+helm search hub # searches the Artifact Hub, which lists helm charts from dozens of different repositories
+
+helm show all stable/mysql
+
+helm show values prometheus-community/kube-prometheus-stack>values.yaml
+helm install [name] prometheus-community/kube-prometheus-stack --namespace=[name] -f values.yaml
+
+helm ls --namespace [name]
+helm pull prometheus-community/kube-prometheus-stack
+
+helm create [chart name] # create templates for new chart
+
+helm install --dry-run --set username=$USERNAME --debug ./mychart
+
+kubectl get secret --namespace wordpress wordpress -o jsonpath="{.data.wordpress-password}" | base64 --decode
+
+
+#Prometheus
+
+Exporter deployment 
+annotations:
+    prometheus.io/path: /metrics
+    prometheus.io/port: "9113"
+    prometheus.io/scrape: "true"
+labels:
+    app.kubernetes.io/instance: prometheus-nginx-exporter
+    app.kubernetes.io/name: prometheus-nginx-exporter
+----------
+ServiceMonitor
+labels:
+    app.kubernetes.io/instance: prometheus-nginx-exporter
+    app.kubernetes.io/name: prometheus-nginx-exporter
+    release: prometheus  # this from servicemonitorselector of custom object prometheuses (kubectl get crd -> kubectl get prometheuses -oyaml) 
+---------
+Prometheuses (custom object)
+serviceMonitorSelector:
+      matchLabels:
+        release: prometheus
+----------
+Check config from operator
+
+ kubectl exec prometheus-prometheus-kube-prometheus-prometheus-0 -c prometheus -it -- cat /etc/prometheus/config_out/prometheus.env.yaml > pr_cfg.yaml
+
+
+#KUBERNETES
+
+kubeadm token create --print-join-command
+
+kubectl config-view
+kubectl version --short
+kubectl get all -o wide
+kubectl get pods --all-namespaces
+kubectl get nodes -o wide
+kubectl get events
+
+kubectl exec [pod name] -c [container name] -- date
+kubectl exec mypod -c ruby-container -i -t -- /bin/bash
+
+kubectl logs [pod name]
+kubectl describe nodes ms-k8smas001.home.local 
+kubectl describe pods --all-namespaces
+kubectl --namespace kube-system get pods
+kubectl describe pods [pod-name] | grep -i controlled # who controls this pod
+kubectl get pod [name] -o yaml > /tmp/1.yaml
+kubectl get deployment nginx -o yaml
+
+kubectl create deploy nginx --image nginx
+kubectl expose deploy nginx --port 80 --type NodePort --name=ext-svc # create service
+kubectl create -f [name of yaml file]
+kubectl scale deploy [name] --replicas=3
+
+kubectl delete pod [name]
+kubectl delete deployment [name]
+
+kubectl label node [name] classification=gold
+
+kubectl create service -f [name.yaml]
+kubectl get endpoint # describe link between service and pods
+kubectl apply -f # apply all yaml files in a directory
+
+kubectl top nodes # performance show
+
+kubectl get endpoints # actual pods addresses for service
+
+kubectl drain node # maintenance mode
+kubectl uncordon node # stop maintenance mode
+
+kubectl-debug ?
+kubectl get events
+
+kubectl describe quota
+
+curl http://localhost:8080/api/v1 # get control rest interface
+
+/etc/kubernetes/manifests  # mainfests location
+
+cat <filename>.yaml | envsubst | kubectl apply -f -
+
+kubectl taint nodes node1 key1=value1:NoSchedule
+
+C:\Program Files (x86)\Cntlm>cygrunsrv.exe --stop cntlm
+
+--- PV+NFS permissions
+mkdir -p /shares/registry
+chown -R nobody:nobody /shares/registry
+chmod -R 777 /shares/registry
+
+----secrets
+echo -n 'password' | base64
+
+kubectl get apiservices

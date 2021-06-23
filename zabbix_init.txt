@@ -1,0 +1,29 @@
+echo 'Acquire::http::proxy "http://172.21.1.5:3128/";'>>/etc/apt/apt.conf.d/10proxy 
+echo 'Acquire::https::proxy "http://172.21.1.5:3128/";'>>/etc/apt/apt.conf.d/10proxy
+
+#export http_proxy=http://172.21.1.5:3128/
+#export https_proxy=http://172.21.1.5:3128/
+apt update 
+apt-get install -y iputils-ping 
+apt install -y curl
+curl https://repo.zabbix.com/zabbix/5.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_5.0-1+focal_all.deb --output zabbix-release_5.0-1+focal_all.deb
+#curl https://repo.zabbix.com/zabbix/4.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_4.0-3+focal_all.deb --output zabbix-release_4.0-3+focal_all.deb 
+dpkg -i zabbix-release_5.0-1+focal_all.deb
+#dpkg -i zabbix-release_4.0-3+focal_all.deb
+apt update
+
+apt-get install -y dialog
+apt-get install -y tzdata
+#dpkg-reconfigure tzdata
+# time zone settings ?
+apt install -y zabbix-server-pgsql zabbix-frontend-php php7.4-pgsql zabbix-nginx-conf zabbix-agent
+apt upgrade -y
+
+export PGPASSWORD='P@ssw0rd'
+
+#psql -U username -h localhost -p 5432 dbname
+psql -U pgadmin -w -h 172.21.1.175 -p 5432 -d postgres -c "CREATE DATABASE zabbix WITH ENCODING='UTF-8' TEMPLATE template0;"
+psql -U pgadmin -w -h 172.21.1.175 -p 5432 -d postgres -c "CREATE USER zabbix WITH PASSWORD 'zabbix';"
+psql -U pgadmin -w -h 172.21.1.175 -p 5432 -d postgres -c "GRANT ALL ON DATABASE zabbix TO zabbix;"
+
+zcat /usr/share/doc/zabbix-server-pgsql/create.sql.gz | psql -h 172.21.1.175 zabbix zabbix

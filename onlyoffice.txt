@@ -1,0 +1,22 @@
+ sed -i  "s/.*www-data.*/www-data:x:33:33:www-data:\/var\/www:\/bin\/bash/" /etc/passwd
+
+/var/www/html/3rdparty/composer/autoload_real.php
+/deployments/nextcloud/3rdparty/composer/autoload_real.php
+ <?php
+ini_set('memory_limit', '1024M');
+?>
+
+/usr/local/bin/php  /var/www/html/occ  config:system:set onlyoffice DocumentServerUrl --value="/ds-vpath/"
+/usr/local/bin/php  /var/www/html/occ  config:system:set onlyoffice DocumentServerInternalUrl --value="http://10.50.241.206:30380/"
+/usr/local/bin/php  /var/www/html/occ  config:system:set onlyoffice StorageUrl --value="http://10.50.241.206:30280/"
+/usr/local/bin/php  /var/www/html/occ  config:system:set allow_local_remote_servers  --value=true
+
+/usr/local/bin/php  /var/www/html/occ config:app:set onlyoffice defFormats --value=\"{\\\"docx\\\":\\\"true\\\",\\\"xlsx\\\":\\\"true\\\",\\\"pptx\\\":\\\"true\\\",\\\"ppsx\\\":\\\"true\\\",\\\"txt\\\":\\\"false\\\",\\\"csv\\\":\\\"false\\\"}\"
+
+/usr/local/bin/php  /var/www/html/occ config:app:set onlyoffice settings_error --value=\"\"
+
+/usr/local/bin/php  /var/www/html/occ  config:system:set onlyoffice DocumentServerUrl --value="http://10.50.241.206:30380"
+/usr/local/bin/php  /var/www/html/occ  config:system:set onlyoffice DocumentServerInternalUrl --value="http://10.50.241.206:30380/"
+/usr/local/bin/php  /var/www/html/occ  config:system:set onlyoffice StorageUrl --value="http://10.50.241.206:30380/"
+
+sed -i  "s/.*"rejectUnauthorized": true.*/.*"rejectUnauthorized": false/" /etc/onlyoffice/documentserver/default.json

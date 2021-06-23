@@ -1,0 +1,52 @@
+{
+  "id": "/nginx",
+  "role": "*",
+  "cmd": null,
+  "cpus": 0.5,
+  "mem": 512,
+  "disk": 512,
+  "gpus": 0,
+  "instances": 1,
+  "acceptedResourceRoles": [
+    "*"
+  ],
+  "container": {
+    "type": "DOCKER",
+    "docker": {
+      "forcePullImage": false,
+      "image": "nginx:1.18",
+      "parameters": [
+        {
+          "key": "net",
+          "value": "pub_net"
+        },
+        {
+          "key": "ip",
+          "value": "172.21.1.44"
+        },
+        {
+          "key": "label",
+          "value": "nginx_tst"
+        }
+      ],
+      "privileged": false
+    },
+    "volumes": [],
+    "portMappings": [
+      {
+        "containerPort": 8080,
+        "labels": {},
+        "protocol": "tcp",
+        "servicePort": 10000
+      }
+    ]
+  },
+  "networks": [
+    {
+      "name": "dcos",
+      "mode": "container"
+    }
+  ],
+  "portDefinitions": [],
+  "maxLaunchDelaySeconds": 300
+}

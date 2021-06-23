@@ -1,0 +1,62 @@
+docker run -d --name zookeeper_1 --net pub_net --ip=172.21.1.41 --memory="256m" -p 2181:2181 -e  ALLOW_ANONYMOUS_LOGIN=yes bitnami/zookeeper:latest
+
+docker run -d --name mesos-master_1 --net pub_net --ip=172.21.1.42 -p 5050:5050 --memory="800m" \
+  -e MESOS_PORT=5050 \
+  -e MESOS_CLUSTER=Cluster1 \
+  -e MESOS_ZK=zk://172.21.1.41:2181/mesos \
+  -e MESOS_QUORUM=1 \
+  -e MESOS_REGISTRY=in_memory \
+  -e MESOS_LOG_DIR=/var/log/mesos \
+  -e MESOS_WORK_DIR=/var/tmp/mesos \
+  -v "$(pwd)/log/mesos:/var/log/mesos" \
+  -v "$(pwd)/tmp/mesos:/var/tmp/mesos" \
+mesosphere/mesos-master:1.5.3-rc1  
+
+#mesosphere/mesos-master:1.7.1
+
+docker run -d  --name mesos-slave_1 --net pub_net --ip=172.21.1.43 -p 5051:5051 --memory="800m" \
+  -e MESOS_PORT=5051 \
+  -e MESOS_MASTER=zk://172.21.1.41:2181/mesos \
+  -e MESOS_SWITCH_USER=0 \
+  -e MESOS_CONTAINERIZERS=docker,mesos \
+  -e MESOS_LOG_DIR=/var/log/mesos \
+  -e MESOS_WORK_DIR=/var/tmp/mesos \
+  -e MESOS_SYSTEMD_ENABLE_SUPPORT="false" \
+  -v "$(pwd)/log/mesos:/var/log/mesos" \
+  -v "$(pwd)/tmp/mesos:/var/tmp/mesos" \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v /cgroup:/cgroup \
+  -v /sys:/sys \
+  -v /usr/local/bin/docker:/usr/local/bin/docker \
+  mesosphere/mesos-slave:1.7.1
+
+docker run -d  --name marathon_1 --net pub_net --ip=172.21.1.43 -p 8080:8080 --memory="800m" \
+  -e MARATHON_MASTER=zk://172.21.1.41:2181/mesos \
+  -e MARATHON_ZK=zk://172.21.1.41:2181/marathon \
+mesosphere/marathon   
+
+mesosphere/marathon:v1.11.24
+
+
+yum -y install python2-devel
+yum install maven
+yum install  zlib-devel libcurl-devel openssl-devel cyrus-sasl-devel cyrus-sasl-md5 apr-devel subversion-devel apr-util-devel
+curl -L https://dl.bintray.com/apache/mesos/el7/x86_64/mesos-1.9.0-1.el7.x86_64.rpm -o mesos-1.9.0-1.el7.x86_64.rpm
+
+yum install compat-openssl10-1:1.0.2o-3.el8.x86_6
+yum install autogen-libopts-5.18.12-8.el8.x86_64
+curl -L http://mirror.centos.org/centos/7/os/x86_64/Packages/ntp-4.2.6p5-29.el7.centos.2.x86_64.rpm -o ntp-4.2.6p5-29.el7.centos.2.x86_64.rpm
+curl -L http://mirror.centos.org/centos/7/os/x86_64/Packages/ntpdate-4.2.6p5-29.el7.centos.2.x86_64.rpm -o ntpdate-4.2.6p5-29.el7.centos.2.x86_64.rpm
+
+rpm -i ntpdate-4.2.6p5-29.el7.centos.2.x86_64.rpm
+rpm -i ntp-4.2.6p5-29.el7.centos.2.x86_64.rpm
+
+rpm -ivh mesos-1.9.0-1.el7.x86_64.rpm
+
+#folders
+/etc/mesos/zk
+/etc/mesos-slave
+/var/tmp/mesos/meta/slaves/latest
+
+rm -f /var/lib/mesos/meta/slaves/latest
+mesos-slave --master=zk://172.21.1.41:2181/mesos --work_dir=/var/tmp/mesos

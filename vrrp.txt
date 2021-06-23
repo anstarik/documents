@@ -1,0 +1,34 @@
+cat /var/log/messages | grep -i keepalived
+
+firewall-cmd --add-rich-rule='rule protocol value="vrrp" accept' --permanent
+firewall-cmd --reload
+
+net.ipv4.ip_nonlocal_bind = 1
+and then reload your sysctl.conf by:
+$ sysctl -p /etc/sysctl.conf
+echo 1 > /proc/sys/net/ipv4/ip_nonlocal_bind
+
+global_defs {
+   notification_email {
+     acassen@firewall.loc
+     failover@firewall.loc
+     sysadmin@firewall.loc
+   }
+   notification_email_from Alexandre.Cassen@firewall.loc
+   router_id Anstarik
+   vrrp_skip_check_adv_addr
+   vrrp_strict
+   vrrp_garp_interval 0
+   vrrp_gna_interval 0
+}
+
+vrrp_instance Nginx_app {
+    state MASTER
+    interface eth1
+    virtual_router_id 10
+    priority 101
+    advert_int 1
+    virtual_ipaddress {
+        10.1.1.20
+    }
+}

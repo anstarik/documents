@@ -1,0 +1,30 @@
+ssh-keygen -t rsa -b 2048 -E sha256 -m PEM -f RSA256.key
+openssl rsa -in RSA256.key -pubout -outform PEM -out RSA256PEM.key.pub
+
+#Генерим подпись для наших данных и сохраняем в кривом формате в файл sign256.c
+echo -n eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IjAwMDEifQ.eyJuYW1lIjoiVVNFUjEiLCJhcHAiOiJ0ZXN0In0 | openssl dgst -sha256  -sign jwtRS256.key -out sign256.c
+
+
+#Конвертим кривой файл в BASE64
+openssl enc -base64 -in sign256.c -out sign256.base64
+
+#Выводим на экран
+cat sign256.base64
+
+echo -n eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IjAwMDEifQ.eyJuYW1lIjoiVVNFUjEiLCJhcHAiOiJ0ZXN0In0 | openssl dgst -sha256  -sign jwtRS256.key -out sign256.sha
+
+
+#--------------
+curl -v --cookie "USER_TOKEN=Yes" http://127.0.0.1:5000/
+curl -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c" http://172.21.1.21
+
+#-------------------------
+
+echo -n eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IjAwMDEifQ.eyJuYW1lIjoiVVNFUjEiLCJhcHAiOiJ0ZXN0In0 | openssl rsautl -encrypt -inkey  RSA256PEM.key.pub -pubin | base64 | tr '+/' '-_' | tr -d '='
+
+openssl base64 -d
+openssl base64 -e
+
+openssl rsautl -decrypt -inkey  RSA256.key
+
+

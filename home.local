@@ -1,0 +1,16 @@
+$TTL 14400
+
+home.local.     IN      SOA     ns1.home.local. admin.home.local. (
+        2020093001      ; Serial
+        10800           ; Refresh
+        3600            ; Retry
+        604800          ; Expire
+        604800          ; Negative Cache TTL
+)
+
+                IN      NS      ns1.test.local.
+
+@               IN      A       172.21.1.5
+localhost       IN      A       127.0.0.1
+ns1             IN      A       172.21.1.5
+ms-sys001	IN	A	172.21.1.5

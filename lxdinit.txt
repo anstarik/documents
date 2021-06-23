@@ -1,0 +1,44 @@
+lxc network create lxdbr0 ipv4.address=10.79.237.1/24 ipv4.nat=true ipv6.address=none ipv6.nat=false
+mkdir -p /lxc_storage
+lxc storage create LXD_STORAGE dir  source=/lxc_storage/lxcstorage1
+
+
+-----
+#!/bin/bash
+mkdir -p /lxc_storage
+
+cat >> lxdconfig.yaml << EOF
+config:
+  images.auto_update_interval: "0"
+networks:
+- config:
+    ipv4.address: 10.79.237.1/24
+    ipv4.nat: "true"
+    ipv6.address: none
+  description: ""
+  managed: false
+  name: lxdbr0
+  type: ""
+storage_pools:
+- config: 
+    source: /lxc_storage/lxcstorage1
+  description: ""
+  name: lxc_storage
+  driver: dir
+profiles:
+- config: {}
+  description: ""
+  devices:
+    eth0:
+      name: eth0
+      nictype: bridged
+      parent: lxdbr0
+      type: nic
+    root:
+      path: /
+      pool: lxc_storage
+      type: disk
+  name: default
+cluster: null
+EOF
+cat lxdconfig.yaml | lxd init --preseed

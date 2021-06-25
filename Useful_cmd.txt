@@ -568,6 +568,9 @@ SLAVEOF NO ONE
 zkCli.sh -server 127.0.0.1:2181
 
 
+#cron
+/var/spool/cron
+
 #CA
 
 #add new trusted root cert

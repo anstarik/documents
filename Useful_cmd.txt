@@ -436,17 +436,19 @@ git config --list # show settings
 git status 
 git add -A . #will add all + deleteted
 git commit -m "message"
-git branch
+git branch #will create new branch
+git checkout [branch] # connect to [branch]
 git checkout -b "new_branch" # create and connect to new branch
-git branch -D [name] # delete branch
+git branch -D [name] # delete branch local
+git push origin --delete branch # delete branch remote
 git push -u origin  [branch name]
 git log -p
 git diff 'origin/main' # compare changes from origin
 git diff --staged # diffs after add
 git remote -v # list remote repos
 
-
-git merge -s [branch]
+git merge [branch name] # you will apply all from [branch name] to your current branch. need first checkout to the needed branch!
+!!git merge -s [branch]
 
 git checkout <commit_hash> # revert to commit hash
 

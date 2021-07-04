@@ -447,6 +447,9 @@ git diff 'origin/main' # compare changes from origin
 git diff --staged # diffs after add
 git remote -v # list remote repos
 
+
+ git log --all --decorate --oneline --graph
+
 git merge [branch name] # you will apply all from [branch name] to your current branch. need first checkout to the needed branch!
 !!git merge -s [branch]
 

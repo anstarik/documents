@@ -423,6 +423,12 @@ nginx -t # check config syntax
 nginx -s reload # reload config
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/nginx-selfsigned.key -out /etc/ssl/certs/nginx-selfsigned.crt
 
+#test requests
+curl -s -w %{time_total}\\n -o /dev/null http://www.shellhacks.com
+
+curl -s -w '\nLookup time:\t%{time_namelookup}\nConnect time:\t%{time_connect}\nAppCon time:\t%{time_appconnect}\nRedirect time:\t%{time_redirect}\nPreXfer time:\t%{time_pretransfer}\nStartXfer time:\t%{time_starttransfer}\n\nTotal time:\t%{time_total}\n' -o /dev/null http://www.shellhacks.com
+
+https://www.shellhacks.com/check-website-response-time-linux-command-line/
 
 #GIT
 

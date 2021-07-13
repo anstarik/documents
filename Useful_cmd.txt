@@ -581,6 +581,16 @@ redis-cli -p 26379 info sentinel
 SENTINEL RESET *
 SLAVEOF NO ONE
 
+#RABBITMQ
+rabbitmqctl status
+rabbitmqctl cluster_status
+rabbitmqctl stop_app / start_app
+rabbitmqctl join_cluster --disc rabbit@rabbitmq1
+
+rabbitmqctl set_policy ha "." '{"ha-mode":"all"}'
+rabbitmqctl list_global_parameters
+rabbitmqctl list_queues
+
 #ZOOKEEPER
 zkCli.sh -server 127.0.0.1:2181
 

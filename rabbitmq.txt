@@ -1,0 +1,36 @@
+docker run -d --name rabbit_1 \
+	--hostname rabbit1.home.local \
+	--net pub_net \
+	--ip=172.21.1.51 \
+	--memory="512m" \
+	-e RABBITMQ_DEFAULT_USER=user \
+	-e RABBITMQ_DEFAULT_PASS=P@ssw0rd \
+	-e RABBITMQ_ERLANG_COOKIE='CAHI8QcglFG2R6iDKxod6R9UMvXQN0Cd' \
+	-e RABBITMQ_USE_LONGNAME=true \
+	-e RABBITMQ_LOGS=/var/lib/rabbitmq/rabbit.log \
+	-p 5672:5672 \
+	-p 15672:15672 \
+	-p 25672:25672 \
+	-v rabbit-1-data:/var/lib/rabbitmq \
+	 rabbitmq:management
+
+
+docker run -d --name rabbit_2 \
+	--hostname rabbit2.home.local \
+	--net pub_net \
+	--ip=172.21.1.52 \
+	--memory="512m" \
+	-e RABBITMQ_DEFAULT_USER=user \
+	-e RABBITMQ_DEFAULT_PASS=P@ssw0rd \
+	-e RABBITMQ_ERLANG_COOKIE='CAHI8QcglFG2R6iDKxod6R9UMvXQN0Cd' \
+	-e RABBITMQ_USE_LONGNAME=true \
+	-e RABBITMQ_LOGS=/var/lib/rabbitmq/rabbit.log \
+	-p 5672:5672 \
+	-p 15672:15672 \
+	-p 25672:25672 \
+	-v rabbit-2-data:/var/lib/rabbitmq \
+	 rabbitmq:management
+
+/var/lib/rabbitmq/.erlang.cookie
+/etc/rabbitmq/enabled_plugins
+/etc/rabbitmq/rabbitmq.conf

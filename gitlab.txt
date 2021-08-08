@@ -9,4 +9,4 @@ docker run -d --name gitlab-01 \
  -v /dockerdata/gitlab-01/config:/etc/gitlab \
  -v /dockerdata/gitlab-01/logs:/var/log/gitlab \
  -v /dockerdata/gitlab-01/data:/var/opt/gitlab \
-gitlab/gitlab-ee:14.0.7-ee.0
+gitlab/gitlab-ee:13.12.9-ee.0

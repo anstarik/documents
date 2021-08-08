@@ -1,4 +1,5 @@
 docker run -d --name gitlab-01 \
+ --hostname 172.21.1.61 \
  --net pub_net \
  --ip=172.21.1.61 \
  --memory="900m" \

@@ -1,0 +1,11 @@
+docker run -d --name gitlab-01 \
+ --net pub_net \
+ --ip=172.21.1.61 \
+ --memory="900m" \
+ -p 443:443 \
+ -p 80:80 \
+ -p 22:22 \
+ -v /dockerdata/gitlab-01/config:/etc/gitlab \
+ -v /dockerdata/gitlab-01/logs:/var/log/gitlab \
+ -v /dockerdata/gitlab-01/data:/var/opt/gitlab \
+gitlab/gitlab-ee:14.0.7-ee.0

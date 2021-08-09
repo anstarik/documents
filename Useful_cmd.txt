@@ -465,6 +465,8 @@ git checkout <commit_hash> # revert to commit hash
 !! git revert <commit_hash> # This will create a new commit which reverts the changes of the commit you specified
 !! git reset <commit_hash> # 
 
+git pull --allow-unrelated-histories # merge from different remote branch
+
 #LXD\LXC\JUJU
 
 snap list

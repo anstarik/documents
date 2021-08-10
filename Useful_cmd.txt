@@ -447,12 +447,18 @@ git checkout [branch] # connect to [branch]
 git checkout -b "new_branch" # create and connect to new branch
 git branch -D [name] # delete branch local
 git push origin --delete branch # delete branch remote
+#this will set remote origin also
 git push -u origin  [branch name]
 git log -p
 git diff 'origin/main' # compare changes from origin
 git diff --staged # diffs after add
 git remote -v # list remote repos
 
+1. git remote add origin http://gitlab.home.local/ci_cd/nginx.git # set new origin
+2. git remote set-url http://gitlab.home.local/ci_cd/nginx.git # change origin
+3. #git pull to sync
+4. git push --set-upstream origin branch # will set also upstream to branch
+5. git pull --allow-unrelated-histories # merge from different remote branch
 
  git log --all --decorate --oneline --graph
 
@@ -465,7 +471,7 @@ git checkout <commit_hash> # revert to commit hash
 !! git revert <commit_hash> # This will create a new commit which reverts the changes of the commit you specified
 !! git reset <commit_hash> # 
 
-git pull --allow-unrelated-histories # merge from different remote branch
+
 
 #LXD\LXC\JUJU
 

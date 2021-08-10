@@ -1,12 +1,17 @@
 docker run -d --name gitlab-01 \
- --hostname 172.21.1.61 \
+ --hostname gitlab.home.local \
  --net pub_net \
  --ip=172.21.1.61 \
- --memory="900m" \
- -p 443:443 \
- -p 80:80 \
- -p 22:22 \
  -v /dockerdata/gitlab-01/config:/etc/gitlab \
  -v /dockerdata/gitlab-01/logs:/var/log/gitlab \
  -v /dockerdata/gitlab-01/data:/var/opt/gitlab \
-gitlab/gitlab-ee:13.12.9-ee.0
+gitlab/gitlab-ce:13.12.10-ce.0
+
+docker run -d --name registry-01 \
+ --net pub_net \
+ --ip=172.21.1.62 \
+ --memory="512m" \
+ -v /dockerdata/registry-01/data:/var/lib/registry \
+registry:2.7.1
+
+#port 5000

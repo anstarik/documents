@@ -212,6 +212,29 @@ echo 1 > /sys/class/scsi_device/1\:0\:0\:0/device/rescan
 
 mkfs.ext4 /dev/sdb1
 
+#lvm
+lsblk #list volumegroups with physical disks
+pvdisplay # info about phys volumes, how much space used on physical, which VG etc
+vgdisplay # volume group info, free space 
+lvdisplay # logical volume info
+
+vgextend <vg_name> /dev/sdb # add new physical to VG
+lvextend -L +10G /dev/mapper/<lv_name> 
+resize2fs /dev/mapper/<lv_name> 
+lvextend --resizefs -l +50%FREE /dev/mapper/<lv_name> 
+
+pvcreate /dev/sdb
+vgcreate <name> /dev/sdb
+lvcreate <volume_group_name!> -L 5G -n <logical_volume_name>
+lvcreate <volume_group_name!> -l 100%FREE -n <logical_volume_name>
+mkfs.ext4 /dev/mapper/<logical_volume_name>
+blkid /dev/mapper/<logical_volume_name> # get UUID for fstab
+
+pvs
+vgs
+lvs
+
+
 #kernel
 Edit /etc/default/grub and append your kernel options and
 
@@ -480,7 +503,9 @@ git checkout <commit_hash> # revert to commit hash
 !! git revert <commit_hash> # This will create a new commit which reverts the changes of the commit you specified
 !! git reset <commit_hash> # 
 
-
+#ansible
+ansible -m shell -a 'hostname' mesos_slave
+ansible -m gather_facts mesos_slave
 
 #LXD\LXC\JUJU
 

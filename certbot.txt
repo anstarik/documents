@@ -1,0 +1,4 @@
+docker run -it  --name certbot-1 --net pub_net --ip=172.21.1.31 \
+            -v "/etc/letsencrypt:/media/data/dockerdata/certbot-1/letsencrypt" \
+            -v "/var/lib/letsencrypt:/media/data/dockerdata/certbot-1/lib/letsencrypt" \
+            certbot/certbot certonly  --register-unsafely-without-email

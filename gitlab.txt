@@ -15,3 +15,9 @@ docker run -d --name registry-01 \
 registry:2.7.1
 
 #port 5000
+
+curl -LJO "https://gitlab-runner-downloads.s3.amazonaws.com/latest/rpm/gitlab-runner_amd64.rpm"
+rpm -ivh gitlab-runner_amd64.rpm
+gitlab-runner register
+
+sudo chmod 666 /var/run/docker.sock

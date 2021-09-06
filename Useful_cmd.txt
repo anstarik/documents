@@ -399,6 +399,9 @@ curl www.yandex.ru -s -f -o /dev/null || echo "Website down."
 #haproxy
 /usr/sbin/setsebool -P haproxy_connect_any 1
 
+#kerberos
+ktpass /princ HTTP/www.home.local@WIN.LOCAL /mapuser spnego@WIN.LOCAL /crypto ALL /ptype KRB5
+_NT_PRINCIPAL /out C:\temp\spnego.keytab /pass <password>
 
 #samba
 ------
@@ -615,6 +618,8 @@ redis-cli -h <IP> ping
 redis-cli -a <pass> -h <IP> ping
 redis-cli -a <pass> -h <IP> monitor
 redis-cli --stat
+
+redis-cli BGREWRITEAOF # clear aof file
 
 redis-cli INFO replication
 redis-cli -p 26379 SENTINEL get-master-addr-by-name mymaster

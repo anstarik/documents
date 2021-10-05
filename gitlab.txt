@@ -19,5 +19,6 @@ registry:2.7.1
 curl -LJO "https://gitlab-runner-downloads.s3.amazonaws.com/latest/rpm/gitlab-runner_amd64.rpm"
 rpm -ivh gitlab-runner_amd64.rpm
 gitlab-runner register
+/etc/gitlab-runner/config.toml
 
 sudo chmod 666 /var/run/docker.sock

@@ -309,6 +309,7 @@ ip -d link show
 
 tcpdump -D
 tcpdump -i eth0 not ip dst 172.21.1.2 and not ip src 172.21.1.2
+tcpdump -ni bond0 proto \\vrrp | grep 'vrid 85'
 
 iptables -t nat -L
 

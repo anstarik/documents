@@ -20,5 +20,11 @@ curl -LJO "https://gitlab-runner-downloads.s3.amazonaws.com/latest/rpm/gitlab-ru
 rpm -ivh gitlab-runner_amd64.rpm
 gitlab-runner register
 /etc/gitlab-runner/config.toml
+volumes = ["/cache", "/var/run/docker.sock:/var/run/docker.sock"]
+
+{
+"insecure-registries" : ["registry.home.local:5000","gitlab.home.local","gitlab-reg.home.local"]
+}
+
 
 sudo chmod 666 /var/run/docker.sock

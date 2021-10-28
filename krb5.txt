@@ -1,3 +1,23 @@
+проверить кейтаб
+klist -ke /etc/http.keytab
+
+проверить авторизацию вдомене по кейтабу
+kinit -V -k -t /etc/http.keytab HTTP/test.intranet.com@INTRANET.COM
+
+посмотреть выданные билеты
+klist
+
+добавить кейтаб
+ktutil
+   rkt /path to keytab
+   wkt /etc/krb5.keytab
+
+проверить права на /etc/krb5.keytab
+
+проверить ДНС и обратную зону!
+
+
+
 includedir /etc/krb5.conf.d/
 
 [logging]

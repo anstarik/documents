@@ -10,6 +10,7 @@ klist
 добавить кейтаб
 ktutil
    rkt /path to keytab
+   list -k -e 
    wkt /etc/krb5.keytab
 
 проверить права на /etc/krb5.keytab

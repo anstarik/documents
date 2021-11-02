@@ -3,5 +3,6 @@ npm install [module]
 npm install --global yarn
 npx create-react-app [name]
 yarn create react-app [name]
+yarn install # install dependencies
 yarn build
 yarn start

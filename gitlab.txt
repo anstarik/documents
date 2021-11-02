@@ -28,3 +28,12 @@ volumes = ["/cache", "/var/run/docker.sock:/var/run/docker.sock"]
 
 
 sudo chmod 666 /var/run/docker.sock
+
+cashe storage on runner
+shell:
+/home/gitlab-runner/cache/<user>/<project>/<cache-key>/cache.zip.
+
+docker:
+/var/lib/docker/volumes/<volume-id>/_data/<user>/<project>/<cache-key>/cache.zip.
+
+https://docs.gitlab.com/ee/ci/caching/

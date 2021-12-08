@@ -14,3 +14,18 @@ fi
 #execute with sudo pass and check result 
 echo $pass | sudo psql -C '\du' | grep root > /dev/null 2>&1 
 if [ $? == 0]
+
+#values inside double quotes
+calculation='2 * 3'
+echo "$calculation"         # prints 2 * 3
+echo $calculation           # prints 2, the list of files in the current directory, and 3
+echo "$(($calculation))"    # prints 6
+
+y=4
+i=3
+"+799'$i'22'$y'4"
+
+#math operations with variables
+x=5
+y=10
+ans=$(( x + y ))

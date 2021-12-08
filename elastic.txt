@@ -99,7 +99,8 @@ DELETE /_snapshot/my_fs_backup
   #verify
 POST /_snapshot/backup1/_verify
 
-   #clean
+   #cleanroot
+
 POST /_snapshot/my_repository/_cleanup
 
   #create snapshot
@@ -201,3 +202,60 @@ curl -XPUT "localhost:9200/_cluster/settings" -d '{
 
 #текущие настройки 
 _cluster/settings?include_defaults=true&pretty
+
+
+#------------------------CRUD---------------------------------
+
+#template
+curl -XPUT http://els-cls.home.local/new_index -H "Content-Type: application/json" -d '{
+  
+
+}'
+
+#new index
+curl -XPUT http://els-cls.home.local/new_index -H "Content-Type: application/json" -d '{
+  "settings": {
+    "index": {
+      "number_of_shards": 3,  
+      "number_of_replicas": 2 
+    }
+  }
+}
+}'
+
+curl -XPUT http://172.21.1.31:9200/new_index/_settings -H "Content-Type: application/json" -d @data.json
+
+{
+   "index" : {
+       "number_of_replicas" : 0,
+       "refresh_interval" : "1s"
+   }
+}
+
+
+curl -XPUT http://172.21.1.31:9200/_template/index_defaults -H "Content-Type: application/json" -d @data.json
+
+{
+   "index_patterns": "*_index",
+      "settings" : {
+           "index" : {
+              "number_of_replicas" : 0,
+               "number_of_shards" : 2
+            } 
+         
+      }
+
+}
+
+curl -XPOST http://172.21.1.31:9200/new_index/doc1 -H "Content-Type: application/json" -d '{ "name": "user1", "tel": "+79932214" }'
+
+
+curl -XGET http://172.21.1.31:9200/new_index/doc1/_search -H "Content-Type: application/json" -d '{ "query": {"match": { "name":"user3" } } }'
+
+curl -XGET http://172.21.1.31:9200/new_index/doc1/_search?pretty -H "Content-Type: application/json" -d '{ "size": 100, "query": {"match_all": {} } }'
+
+curl -XPOST http://172.21.1.31:9200/new_index/doc1/Y4kSAX0B8P03WIXDS1y0/_update -H "Content-Type: application/json" -d '{ "doc": {"name": "user800"} }'
+
+curl -XPOST http://172.21.1.31:9200/new_index/doc1/_delete_by_query -H "Content-Type: application/json" -d '{"query": {"match": { "name":"user$i" } } }'
+
+jq <<< '{ "foo": "lorem", "bar": "ipsum" }' .  > 1.txt

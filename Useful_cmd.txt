@@ -736,6 +736,8 @@ kubectl expose deploy nginx --port 80 --type NodePort --name=ext-svc # create se
 kubectl create -f [name of yaml file]
 kubectl scale deploy [name] --replicas=3
 
+kubectl -n elscls  rollout restart statefulset elscls01-master
+
 kubectl delete pod [name]
 kubectl delete deployment [name]
 

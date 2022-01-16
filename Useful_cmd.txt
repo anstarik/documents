@@ -738,6 +738,9 @@ kubectl scale deploy [name] --replicas=3
 
 kubectl -n elscls  rollout restart statefulset elscls01-master
 
+kubectl auth can-i get pods --as=system:serviceaccount:react-app:react-sa
+kubectl create clusterrolebinding superuser --serviceaccount=react-app:react-sa --clusterrole=cluster-admin -n react-app
+
 kubectl delete pod [name]
 kubectl delete deployment [name]
 
